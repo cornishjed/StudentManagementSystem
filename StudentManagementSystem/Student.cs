@@ -11,7 +11,7 @@ class Student(string name, int age)
 
     public void AddGrade(int grade)
     {
-        Console.WriteLine($"grdade added: {grade}");
+        Console.WriteLine($"grade added: {grade}");
         Grades.Add(grade);
     }
 

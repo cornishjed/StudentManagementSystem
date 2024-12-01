@@ -42,7 +42,7 @@ Select from the following options:
                     AddGrade();
                     break;
                 case 3:
-                    ViewAverageGrade();
+                    ViewAllAverageGrades();
                     break;
                 case 4:
                     DisplayStudentsInfo();
@@ -68,9 +68,6 @@ Select from the following options:
     {
         Console.Error.WriteLine("Error: Invalid input...");
     }
-
-
-
 }
 
 void AddNewStudent()
@@ -85,8 +82,6 @@ void AddNewStudent()
         Console.WriteLine("Enter name: ");
         name = Console.ReadLine();
     }
-
-    char.ToUpper(name[0]);
 
     while (age == 0 || age < 1)
     {
@@ -115,30 +110,61 @@ void AddGrade()
 {
     PrintHeader("Add Grade");
 
-    Student currentStudent = GetStudent();
+    if (students.Count > 0)
+    {
+        Student currentStudent = GetStudent();
 
-    Console.WriteLine("Enter grade: ");
+        if (currentStudent != null)
+        {
+            Console.WriteLine("Enter grade: ");
 
-    int newGrade = Convert.ToInt16(Console.ReadLine());
+            int newGrade = Convert.ToInt16(Console.ReadLine());
 
-    if (currentStudent != null) currentStudent.AddGrade(newGrade);
+            if (newGrade > -1)
+            {
+                currentStudent.AddGrade(newGrade);
+            }
+            else
+            {
+                Console.WriteLine("Error: Cannot be a negative value...");
+            }
+        }
+    }
+    else
+    {
+        Console.WriteLine("No students exist...");
+    }
 
 }
 
-void ViewAverageGrade()
+void ViewAllAverageGrades()
 {
-    PrintHeader("View Average Grade");
+    PrintHeader("View Grade Average");
 
-    Student currentStudent = GetStudent();
-    int total = 0;
-
-    foreach (int grade in currentStudent.Grades)
+    if (students.Count > 0)
     {
-        total += grade;
+        Student currentStudent = GetStudent();
+
+        if (currentStudent.Grades.Count > 0)
+        {
+            int total = 0;
+
+            foreach (int grade in currentStudent.Grades)
+            {
+                total += grade;
+            }
+
+            Console.WriteLine($"Average grade: {total / currentStudent.Grades.Count}");
+        }
+        else
+        {
+            Console.WriteLine("Error: No grades exist for this student.");
+        }
     }
-
-    Console.WriteLine($"Average grade: {total / currentStudent.Grades.Count}");
-
+    else
+    {
+        Console.WriteLine("No students exist...");
+    }
 }
 
 void DisplayStudentsInfo()
@@ -150,15 +176,18 @@ void DisplayStudentsInfo()
         foreach (Student student in students)
         {
             Console.WriteLine($"Student ID: {student.StudentId}, Name: {student.Name}, Age: {student.Age}");
-            if (student.Grades != null)
+            if (student.Grades.Count > 0)
             {
-                for (int x = 0; x < student.Grades.Count; x++)
+                int total = 0;
+
+                foreach (int grade in student.Grades)
                 {
-                    Console.WriteLine($"Grade {x + 1}: {student.Grades[x]}");
+                    total += grade;
                 }
+
+                Console.WriteLine($"Average grade: {total / student.Grades.Count}");
             }
             Console.WriteLine();
-
         }
     }
     else
@@ -179,7 +208,17 @@ Student GetStudent()
             Console.WriteLine("Enter student name: ");
 
             string studentName = Console.ReadLine();
-            return students.Find(x => x.Name.Equals(studentName, StringComparison.Ordinal));
+            Student currentStudent = students.Find(x => x.Name.Equals(studentName, StringComparison.Ordinal));
+
+            if (currentStudent != null)
+            {
+                return currentStudent;
+            }
+            else
+            {
+                Console.WriteLine("Error: Student doesn't exist...");
+                return null;
+            }
         case "2":
             Console.WriteLine("Enter student ID: ");
 
